@@ -41,6 +41,6 @@ RUN chsh -s /usr/bin/zsh alice
 RUN echo 'alice ALL=(ALL:ALL) ALL' >> /etc/sudoers
 
 # download program-installer
-#RUN wget --no-check-certificat -O installer.sh "https://gist.githubusercontent.com/alice1017/f222eda6dcbbedb470a006d61c2bf60c/raw/b7a6ac12769f33e366cd593c3e08d528c45094af/program-installer.sh"
+RUN wget --no-check-certificat -O /home/alice/installer.sh "https://raw.githubusercontent.com/alice1017/DockerFiles/master/program-installer.sh"
 
 CMD    ["/usr/sbin/sshd", "-D"]
