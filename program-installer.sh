@@ -35,6 +35,9 @@ DOWNLOAD="wget --no-check-certificate"
 # move homedir
 cd $HOMEDIR
 
+# download zshrc
+$DOWNLOAD -O .zshrc https://raw.githubusercontent.com/alice1017/DockerFiles/master/zshrc
+
 # ===============
 #     VIM
 # ===============
