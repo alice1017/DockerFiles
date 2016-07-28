@@ -94,7 +94,6 @@ git clone http://github.com/sstephenson/rbenv.git .rbenv
 
 # write rbenv starter
 cat << "EOF" >> .zshrc
-
 # rbenv installer
 export RBENV_ROOT=$HOME/.rbenv
 export PATH=$RBENV_ROOT/bin:$PATH
@@ -106,7 +105,8 @@ git clone http://github.com/sstephenson/ruby-build.git .rbenv/plugins/ruby-build
 
 # install ruby stable
 RBENV=.rbenv/bin/rbenv
-$RBENV install 2.0.0 && $RBENV global 2.0.0
+STABLE=`rbenv install -l | grep -v - | tail -1`
+$RBENV install $STABLE && $RBENV global $STABLE
 
 if [ $? != 0 ]; then
     echo "Ruby build failed.\n"
