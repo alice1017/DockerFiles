@@ -37,6 +37,7 @@ EXPOSE 22
 # about login user
 RUN useradd -m alice
 RUN gpasswd -a alice staff
+RUN echo "alice:hayato2192" | chpasswd
 RUN chsh -s /usr/bin/zsh alice
 RUN echo 'alice ALL=(ALL:ALL) ALL' >> /etc/sudoers
 
