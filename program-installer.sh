@@ -131,7 +131,7 @@ export PATH=$HOME/.nodebrew/current/bin:$PATH
 EOF
 
 # install node stable
-NODEBREW=.nodebrew/bin/nodebrew
+NODEBREW=.nodebrew/current/bin/nodebrew
 $NODEBREW install stable && $NODEBREW use stable
 
 if [ $? != 0 ]; then
