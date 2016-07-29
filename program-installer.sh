@@ -30,20 +30,29 @@ fi
 
 # Variables
 HOMEDIR=$1
-DOWNLOAD="wget --no-check-certificate"
+DOWNLOAD="wget --no-check-certificate --quiet"
+GIT_CLONE="git clone -q"
+
+LOGGER="[ INSTALLER ]"
+LOGGER_DOWNLOADING="Downloading"
+LOGGER_CLONING="Cloning"
+LOGGER_INSTALLING="Installing"
 
 # move homedir
 cd $HOMEDIR
 
 # download zshrc
+echo $LOGGER $LOGGER_DOWNLOADING zshrc
 $DOWNLOAD -O .zshrc https://raw.githubusercontent.com/alice1017/DockerFiles/master/zshrc
 
 # ===============
 #     VIM
 # ===============
+echo $LOGGER $LOGGER_INSTALLING vim
+
 mkdir .vim
 mkdir .vim/bundle
-git clone http://github.com/gmarik/vundle.git .vim/bundle/vundle
+$GIT_CLONE http://github.com/gmarik/vundle.git .vim/bundle/vundle
 
 # vimrc
 $DOWNLOAD -O .vim/vimrc "https://gist.githubusercontent.com/alice1017/c66e2e07cb8cee95091b/raw/335f6b4c28ac2c6a3c10405b9b53f923c6c64d94/vimrc"
@@ -59,8 +68,9 @@ sleep 1
 # ===============
 #    PYTHON
 # ===============
+echo $LOGGER $LOGGER_INSTALLING pyenv
 
-git clone http://github.com/yyuu/pyenv.git .pyenv
+$GIT_CLONE http://github.com/yyuu/pyenv.git .pyenv
 
 # write pyenv starter
 cat << "EOF" >> .zshrc
@@ -71,6 +81,7 @@ eval "$(pyenv init -)"
 EOF
 
 # install python
+echo $LOGGER $LOGGER_INSTALLING Python 2.7.5
 PYENV=.pyenv/bin/pyenv
 $PYENV install 2.7.5 && $PYENV global 2.7.5
 
@@ -92,8 +103,9 @@ sleep 1
 # ===============
 #     RUBY
 # ===============
+echo $LOGGER $LOGGER_INSTALLING rbenv
 
-git clone http://github.com/sstephenson/rbenv.git .rbenv
+$GIT_CLONE http://github.com/sstephenson/rbenv.git .rbenv
 
 # write rbenv starter
 cat << "EOF" >> .zshrc
@@ -104,9 +116,11 @@ eval "$(rbenv init - zsh)"
 EOF
 
 # install rbenv-build plugin
-git clone http://github.com/sstephenson/ruby-build.git .rbenv/plugins/ruby-build
+echo $LOGGER $LOGGER_CLONING rbenv-build
+$GIT_CLONE http://github.com/sstephenson/ruby-build.git .rbenv/plugins/ruby-build
 
 # install ruby stable
+echo $LOGGER $LOGGER_INSTALLING Ruby stable
 RBENV=.rbenv/bin/rbenv
 STABLE=`rbenv install -l | grep -v - | tail -1`
 $RBENV install $STABLE && $RBENV global $STABLE
@@ -120,8 +134,10 @@ sleep 1
 # ===============
 #    NODEBREW
 # ===============
-
+echo $LOGGER $LOGGER_DOWNLOADING nodebrew installer
 $DOWNLOAD -O nodebrew_installer http://git.io/nodebrew
+
+echo $LOGGER $LOGGER_INSTALLING nodebrew
 perl nodebrew_installer setup
 
 # write nodebrew starter
@@ -131,30 +147,34 @@ export PATH=$HOME/.nodebrew/current/bin:$PATH
 EOF
 
 # install node stable
+echo $LOGGER $LOGGER_INSTALLING Node stable
 NODEBREW=.nodebrew/current/bin/nodebrew
 $NODEBREW install stable && $NODEBREW use stable
+
+rm nodebrew_installer
 
 if [ $? != 0 ]; then
     echo "Nodebrew build failed.\n"
 fi
 
+
 # check install finished
-ehoc "Checking install finished correctly...\n\n"
+echo $LOGGER "Checking install finished correctly...\n\n"
 if [ `which python` = "$HOMEDIR/.pyenv/shims/python" ]; then
-    echo "[ INSTALLER ] Python install finished correctly."
+    echo $LOGGER Python install finished correctly.
 else
-    echo "[ INSTALLER ] Python install failed."
+    echo $LOGGER Python install failed.
 fi
 
 if [ `which ruby` = "$HOMEDIR/.rbenv/shims/ruby" ]; then
-    echo "[ INSTALLER ] Ruby install finished correctly."
+    echo $LOGGER Ruby install finished correctly.
 else
-    echo "[ INSTALLER ] Ruby install failed."
+    echo $LOGGER Ruby install failed.
 fi
 
 if [ `which node` = "$HOMEDIR/.nodebrew/current/bin/node" ]; then
-    echo "[ INSTALLER ] Node install finished correctly."
+    echo $LOGGER Node install finished correctly.
 else
-    echo "[ INSTALLER ] Node install failed."
+    echo $LOGGER Node install failed.
 fi
 
