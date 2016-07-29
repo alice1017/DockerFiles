@@ -24,7 +24,7 @@ MAINTAINER Alice1017 genocidedragon@gmail.com
 
 # packager update & install
 RUN apt-get update
-RUN apt-get install -y zsh git vim make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev llvm libncurses5-dev libncursesw5-dev xz-utils
+RUN apt-get install -y zsh git vim make man manpages-dev build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev llvm libncurses5-dev libncursesw5-dev xz-utils
 
 # sshd
 RUN apt-get install -y openssh-server
