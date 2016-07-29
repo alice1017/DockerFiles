@@ -138,5 +138,23 @@ if [ $? != 0 ]; then
     echo "Nodebrew build failed.\n"
 fi
 
+# check install finished
+ehoc "Checking install finished correctly...\n\n"
+if [ `which python` = "$HOMEDIR/.pyenv/shims/python" ]; then
+    echo "[ INSTALLER ] Python install finished correctly."
+else
+    echo "[ INSTALLER ] Python install failed."
+fi
 
+if [ `which ruby` = "$HOMEDIR/.rbenv/shims/ruby" ]; then
+    echo "[ INSTALLER ] Ruby install finished correctly."
+else
+    echo "[ INSTALLER ] Ruby install failed."
+fi
+
+if [ `which node` = "$HOMEDIR/.nodebrew/current/bin/node" ]; then
+    echo "[ INSTALLER ] Node install finished correctly."
+else
+    echo "[ INSTALLER ] Node install failed."
+fi
 
