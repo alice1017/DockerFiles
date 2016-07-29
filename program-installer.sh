@@ -83,7 +83,7 @@ EOF
 # install python
 echo $LOGGER $LOGGER_INSTALLING Python 2.7.5
 PYENV=.pyenv/bin/pyenv
-$PYENV install 2.7.5 && $PYENV global 2.7.5
+$PYENV install -v 2.7.5 && $PYENV global 2.7.5
 
 if [ $? != 0 ]; then
     echo "Python build failed.\n"
@@ -123,7 +123,7 @@ $GIT_CLONE http://github.com/sstephenson/ruby-build.git .rbenv/plugins/ruby-buil
 echo $LOGGER $LOGGER_INSTALLING Ruby stable
 RBENV=.rbenv/bin/rbenv
 STABLE=`rbenv install -l | grep -v - | tail -1`
-$RBENV install $STABLE && $RBENV global $STABLE
+$RBENV install -v $STABLE && $RBENV global $STABLE
 
 if [ $? != 0 ]; then
     echo "Ruby build failed.\n"
