@@ -78,7 +78,7 @@ if [ $? != 0 ]; then
     echo "Python build failed.\n"
     echo "This installer does not install python packages.\n"
 
-else;
+else
 
     # install python packages
     EASYINSTALL=.pyenv/versions/2.7.5/bin/easy_install
