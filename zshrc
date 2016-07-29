@@ -99,7 +99,7 @@ alias -g dot="| grep '^\.'"
 ##================= リストの色つけの設定 =================##
 ##========================================================##
 # ls, #dir, vdir の設定
-alias ls="ls -GwF"
+alias ls="ls -G -F --color=always"
 export MAILCHECK=0
 # 補完候補にも色付き表示
 #zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
