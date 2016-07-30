@@ -24,7 +24,10 @@ MAINTAINER Alice1017 genocidedragon@gmail.com
 
 # packager update & install
 RUN apt-get update
-RUN apt-get install -y zsh git vim make man manpages-dev build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev llvm libncurses5-dev libncursesw5-dev xz-utils
+RUN apt-get install -y zsh git vim make man manpages-dev
+RUN apt-get install -y build-essential libssl-dev zlib1g-dev
+RUN apt-get install -y libbz2-dev libreadline-dev libsqlite3-dev
+RUN apt-get install -y llvm libncurses5-dev libncursesw5-dev xz-utils language-pack-ja
 
 # sshd
 RUN apt-get install -y openssh-server
@@ -42,8 +45,11 @@ RUN chsh -s /usr/bin/zsh alice
 RUN echo 'alice ALL=(ALL:ALL) ALL' >> /etc/sudoers
 
 # download program-installer
-RUN wget --no-check-certificat -O /home/alice/installer.sh "https://raw.githubusercontent.com/alice1017/DockerFiles/master/program-installer.sh"
+RUN wget -q --no-check-certificat -O /home/alice/installer.sh "https://raw.githubusercontent.com/alice1017/DockerFiles/master/program-installer.sh"
 RUN chown alice:alice /home/alice/installer.sh
 RUN chmod +x /home/alice/installer.sh
+
+# download zshrc
+RUN wget -q --no-check-certificat -O /home/alice/.zshrc "https://raw.githubusercontent.com/alice1017/DockerFiles/master/zshrc"
 
 CMD    ["/usr/sbin/sshd", "-D"]

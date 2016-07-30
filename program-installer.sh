@@ -41,10 +41,6 @@ LOGGER_INSTALLING="Installing"
 # move homedir
 cd $HOMEDIR
 
-# download zshrc
-echo $LOGGER $LOGGER_DOWNLOADING zshrc
-$DOWNLOAD -O .zshrc https://raw.githubusercontent.com/alice1017/DockerFiles/master/zshrc
-
 # ===============
 #     VIM
 # ===============
