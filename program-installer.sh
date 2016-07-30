@@ -160,19 +160,19 @@ fi
 
 # check install finished
 echo $LOGGER "Checking install finished correctly...\n\n"
-if [ `which python` = "$HOMEDIR/.pyenv/shims/python" ]; then
+if [ "`which python`" = "$HOMEDIR/.pyenv/shims/python" ]; then
     echo $LOGGER Python install finished correctly.
 else
     echo $LOGGER Python install failed.
 fi
 
-if [ `which ruby` = "$HOMEDIR/.rbenv/shims/ruby" ]; then
+if [ "`which ruby`" = "$HOMEDIR/.rbenv/shims/ruby" ]; then
     echo $LOGGER Ruby install finished correctly.
 else
     echo $LOGGER Ruby install failed.
 fi
 
-if [ `which node` = "$HOMEDIR/.nodebrew/current/bin/node" ]; then
+if [ "`which node`" = "$HOMEDIR/.nodebrew/current/bin/node" ]; then
     echo $LOGGER Node install finished correctly.
 else
     echo $LOGGER Node install failed.
