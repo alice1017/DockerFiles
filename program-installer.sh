@@ -41,6 +41,9 @@ LOGGER_INSTALLING="Installing"
 # move homedir
 cd $HOMEDIR
 
+# download zshrc
+$DOWNLOAD -O /home/alice/.zshrc "https://raw.githubusercontent.com/alice1017/DockerFiles/master/zshrc"
+
 # ===============
 #     VIM
 # ===============

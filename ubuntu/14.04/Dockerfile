@@ -49,7 +49,4 @@ RUN wget -q --no-check-certificate -O /home/alice/installer.sh "https://raw.gith
 RUN chown alice:alice /home/alice/installer.sh
 RUN chmod +x /home/alice/installer.sh
 
-# download zshrc
-RUN wget -q --no-check-certificate -O /home/alice/.zshrc "https://raw.githubusercontent.com/alice1017/DockerFiles/master/zshrc"
-
 CMD    ["/usr/sbin/sshd", "-D"]
