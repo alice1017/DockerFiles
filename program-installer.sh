@@ -82,18 +82,15 @@ EOF
 # install python
 echo $LOGGER $LOGGER_INSTALLING Python 2.7.5
 PYENV=.pyenv/bin/pyenv
-$PYENV install -v 2.7.5 && $PYENV global 2.7.5
+$PYENV install -v 2.7.5 > /tmp/python-install.log 2>&1 && $PYENV global 2.7.5
 
-if [ $? != 0 ]; then
-    echo "Python build failed.\n"
-    echo "This installer does not install python packages.\n"
-
-else
+if [ $? = 0 ]; then
 
     # install python packages
+    echo $LOGGER $LOGGER_INSTALLING Python packages: pip virtualenv
     EASYINSTALL=.pyenv/versions/2.7.5/bin/easy_install
-    $EASYINSTALL pip
-    $EASYINSTALL virtualenv
+    $EASYINSTALL pip > /dev/null 2>&1
+    $EASYINSTALL virtualenv > /dev/null 2>&1
 
 fi
 
@@ -122,7 +119,7 @@ $GIT_CLONE http://github.com/sstephenson/ruby-build.git .rbenv/plugins/ruby-buil
 echo $LOGGER $LOGGER_INSTALLING Ruby stable
 RBENV=.rbenv/bin/rbenv
 STABLE=`rbenv install -l | grep -v - | tail -1`
-$RBENV install -v $STABLE && $RBENV global $STABLE
+$RBENV install -v $STABLE > /tmp/ruby-installer.log 2>&1 && $RBENV global $STABLE
 
 if [ $? != 0 ]; then
     echo "Ruby build failed.\n"
@@ -137,7 +134,7 @@ echo $LOGGER $LOGGER_DOWNLOADING nodebrew installer
 $DOWNLOAD -O nodebrew_installer http://git.io/nodebrew
 
 echo $LOGGER $LOGGER_INSTALLING nodebrew
-perl nodebrew_installer setup
+perl nodebrew_installer setup > /dev/null 2>&1
 
 # write nodebrew starter
 cat << "EOF" >> .zshrc
@@ -148,32 +145,37 @@ EOF
 # install node stable
 echo $LOGGER $LOGGER_INSTALLING Node stable
 NODEBREW=.nodebrew/current/bin/nodebrew
-$NODEBREW install stable && $NODEBREW use stable
-
-rm nodebrew_installer
+$NODEBREW install stable > /tmp/node-installer.log 2>&1  && $NODEBREW use stable
 
 if [ $? != 0 ]; then
     echo "Nodebrew build failed.\n"
 fi
 
+rm nodebrew_installer
 
 # check install finished
 echo $LOGGER "Checking install finished correctly...\n\n"
 if [ "`which python`" = "$HOMEDIR/.pyenv/shims/python" ]; then
     echo $LOGGER Python install finished correctly.
+    rm /tmp/python-install.log
 else
     echo $LOGGER Python install failed.
+    echo $LOGGER You can read install log: /tmp/python-install.log
 fi
 
 if [ "`which ruby`" = "$HOMEDIR/.rbenv/shims/ruby" ]; then
     echo $LOGGER Ruby install finished correctly.
+    rm /tmp/ruby-installer.log
 else
     echo $LOGGER Ruby install failed.
+    echo $LOGGER You can read install log: /tmp/ruby-installer.log
 fi
 
 if [ "`which node`" = "$HOMEDIR/.nodebrew/current/bin/node" ]; then
     echo $LOGGER Node install finished correctly.
+    rm /tmp/node-installer.log
 else
     echo $LOGGER Node install failed.
+    echo $LOGGER You can read install log: /tmp/node-installer.log
 fi
 
