@@ -118,7 +118,7 @@ $GIT_CLONE http://github.com/sstephenson/ruby-build.git .rbenv/plugins/ruby-buil
 # install ruby stable
 echo $LOGGER $LOGGER_INSTALLING Ruby stable
 RBENV=.rbenv/bin/rbenv
-STABLE=`rbenv install -l | grep -v - | tail -1`
+STABLE=`$RBENV install -l | grep -v - | tail -1`
 $RBENV install -v $STABLE > /tmp/ruby-installer.log 2>&1 && $RBENV global $STABLE
 
 if [ $? != 0 ]; then
