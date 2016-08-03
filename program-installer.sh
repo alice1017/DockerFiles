@@ -24,7 +24,7 @@
 
 # Get home directory from arg
 if [ $# = 0 ]; then
-    echo "usage: program-inistaller.sh [homedir]"
+    echo "usage: program-installer.sh [homedir]"
     exit 1
 fi
 
@@ -42,7 +42,7 @@ LOGGER_INSTALLING="Installing"
 cd $HOMEDIR
 
 # download zshrc
-$DOWNLOAD -O /home/alice/.zshrc "https://raw.githubusercontent.com/alice1017/DockerFiles/master/zshrc"
+$DOWNLOAD -O .zshrc "https://raw.githubusercontent.com/alice1017/DockerFiles/master/zshrc"
 
 # ===============
 #     VIM
