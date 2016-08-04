@@ -456,6 +456,7 @@ fi
 # Call the select_installer function to the all options
 for var in $@
 do
+    echo "===== ${var^^} INSTALLER START ====="
     select_installer $var
 done
 
