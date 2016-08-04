@@ -283,7 +283,7 @@ EOF
         # change global version
         $RBENV global $STABLE
         echo done
-        retun 0
+        return 0
     else
 
         echo failed
