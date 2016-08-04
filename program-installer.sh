@@ -49,6 +49,23 @@ display_usage() {
     echo "note: You can write multiple options"
 }
 
+# Define: display_progressbar
+display_progressbar() {
+    while :
+        do
+        # before display progressbar, exec "command &"
+        jobs %1 > /dev/null 2>&1
+        [ $? = 0 ] || break
+
+        for char in '|' '/' '-' '\'; do
+          echo -n $char
+          sleep 0.1
+          printf "\b"
+        done
+
+    done;
+}
+
 # Define: download_zshrc
 download_zshrc() {
     cd $HOMEDIR
@@ -73,8 +90,9 @@ download_zshrc() {
         fi
     fi
 
-    echo -n "$LOGGER $LOGGER_DOWNLOADING zshrc...  "
-    $DOWNLOAD -O .zshrc "https://raw.githubusercontent.com/alice1017/DockerFiles/master/zshrc"
+    echo -n "$LOGGER $LOGGER_DOWNLOADING zshrc... "
+    $DOWNLOAD -O .zshrc "https://raw.githubusercontent.com/alice1017/DockerFiles/master/zshrc" &
+    display_progressbar
     echo done
 
     return 0
@@ -108,22 +126,27 @@ install_vim() {
 
     mkdir .vim
 
-    echo -n "$LOGGER $LOGGER_CLONING vundle...  "
+    echo -n "$LOGGER $LOGGER_CLONING vundle... "
     mkdir .vim/bundle
-    $GIT_CLONE http://github.com/gmarik/vundle.git .vim/bundle/vundle
+    $GIT_CLONE http://github.com/gmarik/vundle.git .vim/bundle/vundle &
+    display_progressbar
     echo done
 
     # vimrc
-    echo -n "$LOGGER $LOGGER_DOWNLOADING vimrc...  "
-    $DOWNLOAD -O .vim/vimrc "https://gist.githubusercontent.com/alice1017/c66e2e07cb8cee95091b/raw/335f6b4c28ac2c6a3c10405b9b53f923c6c64d94/vimrc"
+    echo -n "$LOGGER $LOGGER_DOWNLOADING vimrc... "
+    $DOWNLOAD -O .vim/vimrc "https://gist.githubusercontent.com/alice1017/c66e2e07cb8cee95091b/raw/335f6b4c28ac2c6a3c10405b9b53f923c6c64d94/vimrc" &
+    display_progressbar
     ln -s .vim/vimrc .vimrc
     echo done
 
     # colorschemee
-    echo -n "$LOGGER $LOGGER_DOWNLOADING colorschemes...  "
+    echo -n "$LOGGER $LOGGER_DOWNLOADING colorschemes... "
     mkdir .vim/colors
-    $DOWNLOAD -O .vim/colors/getafe.vim "https://raw.githubusercontent.com/alice1017/vim-getafe/master/colors/getafe.vim"
-    $DOWNLOAD -O .vim/colors/solarized.vim "https://raw.githubusercontent.com/altercation/vim-colors-solarized/master/colors/solarized.vim"
+    $DOWNLOAD -O .vim/colors/getafe.vim "https://raw.githubusercontent.com/alice1017/vim-getafe/master/colors/getafe.vim" &
+    display_progressbar
+
+    $DOWNLOAD -O .vim/colors/solarized.vim "https://raw.githubusercontent.com/altercation/vim-colors-solarized/master/colors/solarized.vim" &
+    display_progressbar
     echo done
 
     return 0
@@ -154,8 +177,9 @@ install_python() {
         fi
     fi
 
-    echo -n "$LOGGER $LOGGER_INSTALLING pyenv...  "
-    $GIT_CLONE http://github.com/yyuu/pyenv.git .pyenv
+    echo -n "$LOGGER $LOGGER_INSTALLING pyenv... "
+    $GIT_CLONE http://github.com/yyuu/pyenv.git .pyenv &
+    display_progressbar
     echo done
 
 # write pyenv starter
@@ -168,10 +192,11 @@ eval "$(pyenv init -)"
 EOF
 
     # install python
-    echo -n "$LOGGER $LOGGER_INSTALLING Python...  "
+    echo -n "$LOGGER $LOGGER_INSTALLING Python... "
     PYENV=.pyenv/bin/pyenv
     LOGPATH=/tmp/python-installer.log
-    $PYENV install -v 2.7.5 > $LOGPATH 2>&1
+    $PYENV install -v 2.7.5 > $LOGPATH 2>&1 &
+    display_progressbar
 
     if [ $? = 0 ]; then
 
@@ -180,10 +205,13 @@ EOF
         echo done
 
         # install python packages
-        echo -n "$LOGGER $LOGGER_INSTALLING Python packages: pip, virtualenv"
+        echo -n "$LOGGER $LOGGER_INSTALLING Python packages: pip, virtualenv... "
         EASYINSTALL=.pyenv/versions/2.7.5/bin/easy_install
-        $EASYINSTALL pip > /dev/null 2>&1
-        $EASYINSTALL virtualenv > /dev/null 2>&1
+        $EASYINSTALL pip > /dev/null 2>&1 &
+        display_progressbar
+
+        $EASYINSTALL virtualenv > /dev/null 2>&1 &
+        display_progressbar
         echo done
 
         return 0
@@ -222,8 +250,9 @@ install_ruby() {
         fi
     fi
 
-    echo -n "$LOGGER $LOGGER_CLONING rbenv...  "
-    $GIT_CLONE http://github.com/sstephenson/rbenv.git .rbenv
+    echo -n "$LOGGER $LOGGER_CLONING rbenv... "
+    $GIT_CLONE http://github.com/sstephenson/rbenv.git .rbenv &
+    display_progressbar
     echo done
 
     # write rbenv starter
@@ -236,16 +265,18 @@ eval "$(rbenv init - zsh)"
 EOF
 
     # install rbenv-build plugin
-    echo -n "$LOGGER $LOGGER_CLONING rbenv-build...  "
-    $GIT_CLONE http://github.com/sstephenson/ruby-build.git .rbenv/plugins/ruby-build
+    echo -n "$LOGGER $LOGGER_CLONING rbenv-build... "
+    $GIT_CLONE http://github.com/sstephenson/ruby-build.git .rbenv/plugins/ruby-build &
+    display_progressbar
     echo done
 
     # install ruby stable
-    echo -n "$LOGGER $LOGGER_INSTALLING Ruby...  "
+    echo -n "$LOGGER $LOGGER_INSTALLING Ruby... "
     RBENV=.rbenv/bin/rbenv
     STABLE=`$RBENV install -l | grep -v - | tail -1`
     LOGPATH=/tmp/ruby-installer.log
-    $RBENV install -v $STABLE > $LOGPATH 2>&1
+    $RBENV install -v $STABLE > $LOGPATH 2>&1 &
+    display_progressbar
 
     if [ $? = 0 ]; then
 
@@ -289,9 +320,14 @@ install_node() {
     fi
 
 
-    echo -n "$LOGGER $LOGGER_INSTALLING nodebrew"
-    $DOWNLOAD -O nodebrew_installer http://git.io/nodebrew
-    perl nodebrew_installer setup > /dev/null 2>&1
+    echo -n "$LOGGER $LOGGER_DOWNLOADING nodebrew installer... "
+    $DOWNLOAD -O nodebrew_installer http://git.io/nodebrew &
+    display_progressbar
+    echo done
+
+    echo -n "$LOGGER $LOGGER_INSTALLING nodebrew... "
+    perl nodebrew_installer setup > /dev/null 2>&1 &
+    display_progressbar
     echo done
 
     # clean
@@ -305,10 +341,11 @@ export PATH=$HOME/.nodebrew/current/bin:$PATH
 EOF
 
     # install node stable
-    echo -n "$LOGGER $LOGGER_INSTALLING Node...  "
+    echo -n "$LOGGER $LOGGER_INSTALLING Node... "
     NODEBREW=.nodebrew/current/bin/nodebrew
     LOGPATH=/tmp/node-installer.log
-    $NODEBREW install stable > $LOGPATH 2>&1
+    $NODEBREW install stable > $LOGPATH 2>&1 &
+    display_progressbar
 
     if [ $? = 0 ]; then
 
