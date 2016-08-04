@@ -421,3 +421,6 @@ for var in $@
 do
     select_installer $var
 done
+
+# exit with function result code
+exit $?
