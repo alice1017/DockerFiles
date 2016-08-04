@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # coding: utf-8
 
 # program-installer.sh
@@ -37,7 +37,7 @@ LOGGER_INSTALLING="Installing"
 
 # Functions:
 # Define: display_usage
-function display_usage() {
+display_usage() {
     echo "usage: program-installer.sh [option, option, ...]"
     echo "options:"
     echo "  zshrc  - Download zshrc only"
@@ -50,30 +50,30 @@ function display_usage() {
 }
 
 # Define: download_zshrc
-function download_zshrc() {
+download_zshrc() {
     cd $HOMEDIR
 
     # check already exist
     if [ -e .zshrc ]; then
-        echo $LOGGER_WARNING The zshrc is already exist.
+        echo "$LOGGER_WARNING The zshrc is already exist."
         echo -n "$LOGGER_CONFIRM Do you want to download again? (y/n): "
         read CONFIRM
 
         if [ $CONFIRM = "y" ]; then
-            echo $LOGGER OK. Downloader continue.
+            echo "$LOGGER OK. Downloader continue."
 
         elif [ $CONFIRM = "n" ]; then
-            echo $LOGGER OK, Downloader interrupt.
+            echo "$LOGGER OK, Downloader interrupt."
             return 1
 
         else
-            echo $LOGGER Only input "y" or "n"!
-            echo $LOGGER Downloader interrupt.
+            echo "$LOGGER Only input 'y' or 'n'!"
+            echo "$LOGGER Downloader interrupt."
             return 1
         fi
     fi
 
-    echo -n $LOGGER $LOGGER_DOWNLOADING zshrc...  
+    echo -n "$LOGGER $LOGGER_DOWNLOADING zshrc...  "
     $DOWNLOAD -O .zshrc "https://raw.githubusercontent.com/alice1017/DockerFiles/master/zshrc"
     echo done
 
@@ -81,45 +81,46 @@ function download_zshrc() {
 }
 
 # Define: install_vim
-function install_vim() {
+install_vim() {
     cd $HOMEDIR
 
     # check already exist
     if [ -d .vim ]; then
-        echo $LOGGER_WARNING The .vim directory is already exist.
+        echo "$LOGGER_WARNING The .vim directory is already exist."
         echo -n "$LOGGER_CONFIRM Do you want to install again? (y/n): "
         read CONFIRM
 
         if [ $CONFIRM = "y" ]; then
-            echo OK. Installer continue.
+            echo "$LOGGER OK. Installer continue."
             rm -rf .vim
+            rm .vimrc
 
         elif [ $CONFIRM = "n" ]; then
-            echo OK, Installer interrupt.
+            echo "$LOGGER OK, Installer interrupt."
             return 1
 
         else
-            echo Only input "y" or "n"!
-            echo $LOGGER Installer interrupt.
+            echo "$LOGGER Only input 'y' or 'n'!"
+            echo "$LOGGER Installer interrupt."
             return 1
         fi
     fi
 
     mkdir .vim
 
-    echo -n $LOGGER $LOGGER_CLONING vundle...  
+    echo -n "$LOGGER $LOGGER_CLONING vundle...  "
     mkdir .vim/bundle
     $GIT_CLONE http://github.com/gmarik/vundle.git .vim/bundle/vundle
     echo done
 
     # vimrc
-    echo -n $LOGGER $LOGGER_DOWNLOADING vimrc...  
+    echo -n "$LOGGER $LOGGER_DOWNLOADING vimrc...  "
     $DOWNLOAD -O .vim/vimrc "https://gist.githubusercontent.com/alice1017/c66e2e07cb8cee95091b/raw/335f6b4c28ac2c6a3c10405b9b53f923c6c64d94/vimrc"
     ln -s .vim/vimrc .vimrc
     echo done
 
     # colorschemee
-    echo -n $LOGGER $LOGGER_DOWNLOADING colorschemes...  
+    echo -n "$LOGGER $LOGGER_DOWNLOADING colorschemes...  "
     mkdir .vim/colors
     $DOWNLOAD -O .vim/colors/getafe.vim "https://raw.githubusercontent.com/alice1017/vim-getafe/master/colors/getafe.vim"
     $DOWNLOAD -O .vim/colors/solarized.vim "https://raw.githubusercontent.com/altercation/vim-colors-solarized/master/colors/solarized.vim"
@@ -129,31 +130,31 @@ function install_vim() {
 }
 
 # Define: install_python
-function install_python() {
+install_python() {
     cd $HOMEDIR
 
     # check already exist
     if [ -d .pyenv ]; then
-        echo $LOGGER_WARNING The pyenv is already exist.
+        echo "$LOGGER_WARNING The pyenv is already exist."
         echo -n "$LOGGER_CONFIRM Do you want to install again? (y/n): "
         read CONFIRM
 
         if [ $CONFIRM = "y" ]; then
-            echo $LOGGER OK. Installer continue.
+            echo "$LOGGER OK. Installer continue."
             rm -rf .pyenv
 
         elif [ $CONFIRM = "n" ]; then
-            echo $LOGGER OK, Installer interrupt.
+            echo "$LOGGER OK, Installer interrupt."
             return 1
 
         else
-            echo $LOGGER Only input "y" or "n"!
-            echo $LOGGER Installer interrupt.
+            echo "$LOGGER Only input 'y' or 'n'!"
+            echo "$LOGGER Installer interrupt."
             return 1
         fi
     fi
 
-    echo -n $LOGGER $LOGGER_INSTALLING pyenv...  
+    echo -n "$LOGGER $LOGGER_INSTALLING pyenv...  "
     $GIT_CLONE http://github.com/yyuu/pyenv.git .pyenv
     echo done
 
@@ -167,7 +168,7 @@ eval "$(pyenv init -)"
 EOF
 
     # install python
-    echo -n $LOGGER $LOGGER_INSTALLING Python...  
+    echo -n "$LOGGER $LOGGER_INSTALLING Python...  "
     PYENV=.pyenv/bin/pyenv
     LOGPATH=/tmp/python-installer.log
     $PYENV install -v 2.7.5 > $LOGPATH 2>&1
@@ -179,7 +180,7 @@ EOF
         echo done
 
         # install python packages
-        echo -n $LOGGER $LOGGER_INSTALLING Python packages: pip, virtualenv
+        echo -n "$LOGGER $LOGGER_INSTALLING Python packages: pip, virtualenv"
         EASYINSTALL=.pyenv/versions/2.7.5/bin/easy_install
         $EASYINSTALL pip > /dev/null 2>&1
         $EASYINSTALL virtualenv > /dev/null 2>&1
@@ -189,39 +190,39 @@ EOF
     else
 
         echo failed
-        echo $LOGGER Installer log: $LOGPATH
-        echo $LOGGER Last 10 log lines:
+        echo "$LOGGER Installer log: $LOGPATH"
+        echo "$LOGGER Last 10 log lines:"
         tail -n 10 $LOGPATH
         return 1
     fi
 }
 
 # Define: install_ruby
-function install_ruby() {
+install_ruby() {
     cd $HOMEDIR
 
     # check already exist
     if [ -d .rbenv ]; then
-        echo $LOGGER_WARNING The rbenv is already exist.
+        echo "$LOGGER_WARNING The rbenv is already exist."
         echo -n "$LOGGER_CONFIRM Do you want to install again? (y/n): "
         read CONFIRM
 
         if [ $CONFIRM = "y" ]; then
-            echo $LOGGER OK. Installer continue.
+            echo "$LOGGER OK. Installer continue."
             rm -rf .rbenv
 
         elif [ $CONFIRM = "n" ]; then
-            echo $LOGGER OK, Installer interrupt.
+            echo "$LOGGER OK, Installer interrupt."
             return 1
 
         else
-            echo $LOGGER Only input "y" or "n"!
-            echo $LOGGER Installer interrupt.
+            echo "$LOGGER Only input 'y' or 'n'!"
+            echo "$LOGGER Installer interrupt."
             return 1
         fi
     fi
 
-    echo -n $LOGGER $LOGGER_CLONING rbenv...  
+    echo -n "$LOGGER $LOGGER_CLONING rbenv...  "
     $GIT_CLONE http://github.com/sstephenson/rbenv.git .rbenv
     echo done
 
@@ -235,12 +236,12 @@ eval "$(rbenv init - zsh)"
 EOF
 
     # install rbenv-build plugin
-    echo -n $LOGGER $LOGGER_CLONING rbenv-build...  
+    echo -n "$LOGGER $LOGGER_CLONING rbenv-build...  "
     $GIT_CLONE http://github.com/sstephenson/ruby-build.git .rbenv/plugins/ruby-build
     echo done
 
     # install ruby stable
-    echo -n $LOGGER $LOGGER_INSTALLING Ruby...  
+    echo -n "$LOGGER $LOGGER_INSTALLING Ruby...  "
     RBENV=.rbenv/bin/rbenv
     STABLE=`$RBENV install -l | grep -v - | tail -1`
     LOGPATH=/tmp/ruby-installer.log
@@ -255,40 +256,40 @@ EOF
     else
 
         echo failed
-        echo $LOGGER Installer log: $LOGPATH
-        echo $LOGGER Last 10 log lines:
+        echo "$LOGGER Installer log: $LOGPATH"
+        echo "$LOGGER Last 10 log lines:"
         tail -n 10 $LOGPATH
         return 1
     fi
 }
 
 # Define: install_node
-function install_node() {
+install_node() {
     cd $HOMEDIR
 
     # check already exist
     if [ -d .nodebrew ]; then
-        echo $LOGGER_WARNING The nodebrew is already exist.
+        echo "$LOGGER_WARNING The nodebrew is already exist."
         echo -n "$LOGGER_CONFIRM Do you want to install again? (y/n): "
         read CONFIRM
 
         if [ $CONFIRM = "y" ]; then
-            echo $LOGGER OK. Installer continue.
+            echo "$LOGGER OK. Installer continue."
             rm -rf .rbenv
 
         elif [ $CONFIRM = "n" ]; then
-            echo $LOGGER OK, Installer interrupt.
+            echo "$LOGGER OK, Installer interrupt."
             return 1
 
         else
-            echo $LOGGER Only input "y" or "n"!
-            echo $LOGGER Installer interrupt.
+            echo "$LOGGER Only input 'y' or 'n'!"
+            echo "$LOGGER Installer interrupt."
             return 1
         fi
     fi
 
 
-    echo -n $LOGGER $LOGGER_INSTALLING nodebrew
+    echo -n "$LOGGER $LOGGER_INSTALLING nodebrew"
     $DOWNLOAD -O nodebrew_installer http://git.io/nodebrew
     perl nodebrew_installer setup > /dev/null 2>&1
     echo done
@@ -304,12 +305,10 @@ export PATH=$HOME/.nodebrew/current/bin:$PATH
 EOF
 
     # install node stable
-    echo -n $LOGGER $LOGGER_INSTALLING Node...  
+    echo -n "$LOGGER $LOGGER_INSTALLING Node...  "
     NODEBREW=.nodebrew/current/bin/nodebrew
     LOGPATH=/tmp/node-installer.log
     $NODEBREW install stable > $LOGPATH 2>&1
-
-
 
     if [ $? = 0 ]; then
 
@@ -320,15 +319,15 @@ EOF
     else
 
         echo faild
-        echo $LOGGER Installer log: $LOGPATH
-        echo $LOGGER Last 10 log lines:
+        echo "$LOGGER Installer log: $LOGPATH"
+        echo "$LOGGER Last 10 log lines:"
         tail -n 10 $LOGPATH
         return 1
     fi
 }
 
 # Define: install_all
-function install_all() {
+install_all() {
     # Flags
     FLAG=0
     failed_installer=()
@@ -367,23 +366,23 @@ function install_all() {
         failed_installer+=("node")
     fi
 
-    echo $LOGGER result:
+    echo "$LOGGER result:"
 
     if [ $FLAG = 0 ]; then
-        echo $LOGGER Installation was completed successfully.
+        echo "$LOGGER Installation was completed successfully."
         return 0
 
     elif [ $FLAG = 1 ]; then
         for installer in failed_installer
         do
-            echo $LOGGER $installer installation failed.
+            echo "$LOGGER $installer installation failed."
         done
         return 1
     fi
 }
 
 # Define: select_installer
-function select_installer() {
+select_installer() {
     INSTALLER=$1
     case "$INSTALLER" in
         "zshrc")
