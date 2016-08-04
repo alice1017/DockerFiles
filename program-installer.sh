@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # coding: utf-8
 
 # program-installer.sh
@@ -22,160 +22,441 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# Get home directory from arg
-if [ $# = 0 ]; then
-    echo "usage: program-installer.sh [homedir]"
-    exit 1
-fi
-
-# Variables
-HOMEDIR=$1
+# Global Variables:
+HOMEDIR=$HOME
 DOWNLOAD="wget --no-check-certificate --quiet"
 GIT_CLONE="git clone -q"
 
 LOGGER="[ INSTALLER ]"
+LOGGER_WARNING="[  WARNING  ]"
+LOGGER_CONFIRM="[  CONFIRM  ]"
 LOGGER_DOWNLOADING="Downloading"
 LOGGER_CLONING="Cloning"
 LOGGER_INSTALLING="Installing"
 
-# move homedir
-cd $HOMEDIR
 
-# download zshrc
-$DOWNLOAD -O .zshrc "https://raw.githubusercontent.com/alice1017/DockerFiles/master/zshrc"
+# Functions:
+# Define: display_usage
+display_usage() {
+    echo "usage: program-installer.sh [option, option, ...]"
+    echo "options:"
+    echo "  zshrc  - Download zshrc only"
+    echo "  vim    - Install vim and Download plugins only"
+    echo "  python - Download pyenv and Install python only"
+    echo "  ruby   - Download rbenv and Install ruby only"
+    echo "  node   - Download nodebrew and Install node only"
+    echo "  all    - Install all"
+    echo "note: You can write multiple options"
+}
 
-# ===============
-#     VIM
-# ===============
-echo $LOGGER $LOGGER_INSTALLING vim
+# Define: display_progressbar
+display_progressbar() {
+    while :
+        do
+        # before display progressbar, exec "command &"
+        jobs %1 > /dev/null 2>&1
+        [ $? = 0 ] || break
 
-mkdir .vim
-mkdir .vim/bundle
-$GIT_CLONE http://github.com/gmarik/vundle.git .vim/bundle/vundle
+        for char in '|' '/' '-' '\'; do
+          echo -n $char
+          sleep 0.1
+          printf "\b"
+        done
 
-# vimrc
-$DOWNLOAD -O .vim/vimrc "https://gist.githubusercontent.com/alice1017/c66e2e07cb8cee95091b/raw/335f6b4c28ac2c6a3c10405b9b53f923c6c64d94/vimrc"
-ln -s .vim/vimrc .vimrc
+    done;
+}
 
-# colorschemee
-mkdir .vim/colors
-$DOWNLOAD -O .vim/colors/getafe.vim "https://raw.githubusercontent.com/alice1017/vim-getafe/master/colors/getafe.vim"
-$DOWNLOAD -O .vim/colors/solarized.vim "https://raw.githubusercontent.com/altercation/vim-colors-solarized/master/colors/solarized.vim"
+# Define: download_zshrc
+download_zshrc() {
+    cd $HOMEDIR
 
-sleep 1
+    # check already exist
+    if [ -e .zshrc ]; then
+        echo "$LOGGER_WARNING The zshrc is already exist."
+        echo -n "$LOGGER_CONFIRM Do you want to download again? (y/n): "
+        read CONFIRM
 
-# ===============
-#    PYTHON
-# ===============
-echo $LOGGER $LOGGER_INSTALLING pyenv
+        if [ $CONFIRM = "y" ]; then
+            echo "$LOGGER OK. Downloader continue."
 
-$GIT_CLONE http://github.com/yyuu/pyenv.git .pyenv
+        elif [ $CONFIRM = "n" ]; then
+            echo "$LOGGER OK, Downloader interrupt."
+            return 1
+
+        else
+            echo "$LOGGER Only input 'y' or 'n'!"
+            echo "$LOGGER Downloader interrupt."
+            return 1
+        fi
+    fi
+
+    echo -n "$LOGGER $LOGGER_DOWNLOADING zshrc... "
+    $DOWNLOAD -O .zshrc "https://raw.githubusercontent.com/alice1017/DockerFiles/master/zshrc" &
+    display_progressbar
+    echo done
+
+    return 0
+}
+
+# Define: install_vim
+install_vim() {
+    cd $HOMEDIR
+
+    # check already exist
+    if [ -d .vim ]; then
+        echo "$LOGGER_WARNING The .vim directory is already exist."
+        echo -n "$LOGGER_CONFIRM Do you want to install again? (y/n): "
+        read CONFIRM
+
+        if [ $CONFIRM = "y" ]; then
+            echo "$LOGGER OK. Installer continue."
+            rm -rf .vim
+            rm .vimrc
+
+        elif [ $CONFIRM = "n" ]; then
+            echo "$LOGGER OK, Installer interrupt."
+            return 1
+
+        else
+            echo "$LOGGER Only input 'y' or 'n'!"
+            echo "$LOGGER Installer interrupt."
+            return 1
+        fi
+    fi
+
+    mkdir .vim
+
+    echo -n "$LOGGER $LOGGER_CLONING vundle... "
+    mkdir .vim/bundle
+    $GIT_CLONE http://github.com/gmarik/vundle.git .vim/bundle/vundle &
+    display_progressbar
+    echo done
+
+    # vimrc
+    echo -n "$LOGGER $LOGGER_DOWNLOADING vimrc... "
+    $DOWNLOAD -O .vim/vimrc "https://gist.githubusercontent.com/alice1017/c66e2e07cb8cee95091b/raw/335f6b4c28ac2c6a3c10405b9b53f923c6c64d94/vimrc" &
+    display_progressbar
+    ln -s .vim/vimrc .vimrc
+    echo done
+
+    # colorschemee
+    echo -n "$LOGGER $LOGGER_DOWNLOADING colorschemes... "
+    mkdir .vim/colors
+    $DOWNLOAD -O .vim/colors/getafe.vim "https://raw.githubusercontent.com/alice1017/vim-getafe/master/colors/getafe.vim" &
+    display_progressbar
+
+    $DOWNLOAD -O .vim/colors/solarized.vim "https://raw.githubusercontent.com/altercation/vim-colors-solarized/master/colors/solarized.vim" &
+    display_progressbar
+    echo done
+
+    return 0
+}
+
+# Define: install_python
+install_python() {
+    cd $HOMEDIR
+
+    # check already exist
+    if [ -d .pyenv ]; then
+        echo "$LOGGER_WARNING The pyenv is already exist."
+        echo -n "$LOGGER_CONFIRM Do you want to install again? (y/n): "
+        read CONFIRM
+
+        if [ $CONFIRM = "y" ]; then
+            echo "$LOGGER OK. Installer continue."
+            rm -rf .pyenv
+
+        elif [ $CONFIRM = "n" ]; then
+            echo "$LOGGER OK, Installer interrupt."
+            return 1
+
+        else
+            echo "$LOGGER Only input 'y' or 'n'!"
+            echo "$LOGGER Installer interrupt."
+            return 1
+        fi
+    fi
+
+    echo -n "$LOGGER $LOGGER_INSTALLING pyenv... "
+    $GIT_CLONE http://github.com/yyuu/pyenv.git .pyenv &
+    display_progressbar
+    echo done
 
 # write pyenv starter
-cat << "EOF" >> .zshrc
+    cat << "EOF" >> .zshrc
 # pyenv installer
 export PYENV_ROOT=$HOME/.pyenv
 export PATH=$PYENV_ROOT/bin:$PATH
 eval "$(pyenv init -)"
+
 EOF
 
-# install python
-echo $LOGGER $LOGGER_INSTALLING Python 2.7.5
-PYENV=.pyenv/bin/pyenv
-$PYENV install -v 2.7.5 > /tmp/python-install.log 2>&1 && $PYENV global 2.7.5
+    # install python
+    echo -n "$LOGGER $LOGGER_INSTALLING Python... "
+    PYENV=.pyenv/bin/pyenv
+    LOGPATH=/tmp/python-installer.log
+    $PYENV install -v 2.7.5 > $LOGPATH 2>&1 &
+    display_progressbar
 
-if [ $? = 0 ]; then
+    if [ $? = 0 ]; then
 
-    # install python packages
-    echo $LOGGER $LOGGER_INSTALLING Python packages: pip virtualenv
-    EASYINSTALL=.pyenv/versions/2.7.5/bin/easy_install
-    $EASYINSTALL pip > /dev/null 2>&1
-    $EASYINSTALL virtualenv > /dev/null 2>&1
+        # change global version
+        $PYENV global 2.7.5
+        echo done
 
-fi
+        # install python packages
+        echo -n "$LOGGER $LOGGER_INSTALLING Python packages: pip, virtualenv... "
+        EASYINSTALL=.pyenv/versions/2.7.5/bin/easy_install
+        $EASYINSTALL pip > /dev/null 2>&1 &
+        display_progressbar
 
-sleep 1
+        $EASYINSTALL virtualenv > /dev/null 2>&1 &
+        display_progressbar
+        echo done
 
-# ===============
-#     RUBY
-# ===============
-echo $LOGGER $LOGGER_INSTALLING rbenv
+        return 0
+    else
 
-$GIT_CLONE http://github.com/sstephenson/rbenv.git .rbenv
+        echo failed
+        echo "$LOGGER Installer log: $LOGPATH"
+        echo "$LOGGER Last 10 log lines:"
+        tail -n 10 $LOGPATH
+        return 1
+    fi
+}
 
-# write rbenv starter
-cat << "EOF" >> .zshrc
+# Define: install_ruby
+install_ruby() {
+    cd $HOMEDIR
+
+    # check already exist
+    if [ -d .rbenv ]; then
+        echo "$LOGGER_WARNING The rbenv is already exist."
+        echo -n "$LOGGER_CONFIRM Do you want to install again? (y/n): "
+        read CONFIRM
+
+        if [ $CONFIRM = "y" ]; then
+            echo "$LOGGER OK. Installer continue."
+            rm -rf .rbenv
+
+        elif [ $CONFIRM = "n" ]; then
+            echo "$LOGGER OK, Installer interrupt."
+            return 1
+
+        else
+            echo "$LOGGER Only input 'y' or 'n'!"
+            echo "$LOGGER Installer interrupt."
+            return 1
+        fi
+    fi
+
+    echo -n "$LOGGER $LOGGER_CLONING rbenv... "
+    $GIT_CLONE http://github.com/sstephenson/rbenv.git .rbenv &
+    display_progressbar
+    echo done
+
+    # write rbenv starter
+    cat << "EOF" >> .zshrc
 # rbenv installer
 export RBENV_ROOT=$HOME/.rbenv
 export PATH=$RBENV_ROOT/bin:$PATH
 eval "$(rbenv init - zsh)"
+
 EOF
 
-# install rbenv-build plugin
-echo $LOGGER $LOGGER_CLONING rbenv-build
-$GIT_CLONE http://github.com/sstephenson/ruby-build.git .rbenv/plugins/ruby-build
+    # install rbenv-build plugin
+    echo -n "$LOGGER $LOGGER_CLONING rbenv-build... "
+    $GIT_CLONE http://github.com/sstephenson/ruby-build.git .rbenv/plugins/ruby-build &
+    display_progressbar
+    echo done
 
-# install ruby stable
-echo $LOGGER $LOGGER_INSTALLING Ruby stable
-RBENV=.rbenv/bin/rbenv
-STABLE=`$RBENV install -l | grep -v - | tail -1`
-$RBENV install -v $STABLE > /tmp/ruby-installer.log 2>&1 && $RBENV global $STABLE
+    # install ruby stable
+    echo -n "$LOGGER $LOGGER_INSTALLING Ruby... "
+    RBENV=.rbenv/bin/rbenv
+    STABLE=`$RBENV install -l | grep -v - | tail -1`
+    LOGPATH=/tmp/ruby-installer.log
+    $RBENV install -v $STABLE > $LOGPATH 2>&1 &
+    display_progressbar
 
-if [ $? != 0 ]; then
-    echo "Ruby build failed.\n"
-fi
+    if [ $? = 0 ]; then
 
-sleep 1
+        # change global version
+        $RBENV global $STABLE
+        echo done
+        return 0
+    else
 
-# ===============
-#    NODEBREW
-# ===============
-echo $LOGGER $LOGGER_DOWNLOADING nodebrew installer
-$DOWNLOAD -O nodebrew_installer http://git.io/nodebrew
+        echo failed
+        echo "$LOGGER Installer log: $LOGPATH"
+        echo "$LOGGER Last 10 log lines:"
+        tail -n 10 $LOGPATH
+        return 1
+    fi
+}
 
-echo $LOGGER $LOGGER_INSTALLING nodebrew
-perl nodebrew_installer setup > /dev/null 2>&1
+# Define: install_node
+install_node() {
+    cd $HOMEDIR
 
-# write nodebrew starter
-cat << "EOF" >> .zshrc
+    # check already exist
+    if [ -d .nodebrew ]; then
+        echo "$LOGGER_WARNING The nodebrew is already exist."
+        echo -n "$LOGGER_CONFIRM Do you want to install again? (y/n): "
+        read CONFIRM
+
+        if [ $CONFIRM = "y" ]; then
+            echo "$LOGGER OK. Installer continue."
+            rm -rf .rbenv
+
+        elif [ $CONFIRM = "n" ]; then
+            echo "$LOGGER OK, Installer interrupt."
+            return 1
+
+        else
+            echo "$LOGGER Only input 'y' or 'n'!"
+            echo "$LOGGER Installer interrupt."
+            return 1
+        fi
+    fi
+
+
+    echo -n "$LOGGER $LOGGER_DOWNLOADING nodebrew installer... "
+    $DOWNLOAD -O nodebrew_installer http://git.io/nodebrew &
+    display_progressbar
+    echo done
+
+    echo -n "$LOGGER $LOGGER_INSTALLING nodebrew... "
+    perl nodebrew_installer setup > /dev/null 2>&1 &
+    display_progressbar
+    echo done
+
+    # clean
+    rm nodebrew_installer
+
+    # write nodebrew starter
+    cat << "EOF" >> .zshrc
 # nodebrew installer
 export PATH=$HOME/.nodebrew/current/bin:$PATH
+
 EOF
 
-# install node stable
-echo $LOGGER $LOGGER_INSTALLING Node stable
-NODEBREW=.nodebrew/current/bin/nodebrew
-$NODEBREW install stable > /tmp/node-installer.log 2>&1  && $NODEBREW use stable
+    # install node stable
+    echo -n "$LOGGER $LOGGER_INSTALLING Node... "
+    NODEBREW=.nodebrew/current/bin/nodebrew
+    LOGPATH=/tmp/node-installer.log
+    $NODEBREW install stable > $LOGPATH 2>&1 &
+    display_progressbar
 
-if [ $? != 0 ]; then
-    echo "Nodebrew build failed.\n"
+    if [ $? = 0 ]; then
+
+        # change global version
+        $NODEBREW use stable
+        echo done
+        return 0
+    else
+
+        echo faild
+        echo "$LOGGER Installer log: $LOGPATH"
+        echo "$LOGGER Last 10 log lines:"
+        tail -n 10 $LOGPATH
+        return 1
+    fi
+}
+
+# Define: install_all
+install_all() {
+    # Flags
+    FLAG=0
+    failed_installer=()
+
+    download_zshrc
+    if [ $? != 0 ]; then
+        $FLAG=1
+        failed_installer+=("zshrc")
+    fi
+    sleep 1
+
+    install_vim
+    if [ $? != 0 ]; then
+        $FLAG=1
+        failed_installer+=("vim")
+    fi
+    sleep 1
+
+    install_python
+    if [ $? != 0 ]; then
+        $FLAG=1
+        failed_installer+=("python")
+    fi
+    sleep 1
+
+    install_ruby
+    if [ $? != 0 ]; then
+        $FLAG=1
+        failed_installer+=("ruby")
+    fi
+    sleep 1
+
+    install_node
+    if [ $? != 0 ]; then
+        $FLAG=1
+        failed_installer+=("node")
+    fi
+
+    echo "$LOGGER result:"
+
+    if [ $FLAG = 0 ]; then
+        echo "$LOGGER Installation was completed successfully."
+        return 0
+
+    elif [ $FLAG = 1 ]; then
+        for installer in failed_installer
+        do
+            echo "$LOGGER $installer installation failed."
+        done
+        return 1
+    fi
+}
+
+# Define: select_installer
+select_installer() {
+    INSTALLER=$1
+    case "$INSTALLER" in
+        "zshrc")
+            download_zshrc;;
+
+        "vim")
+            install_vim;;
+
+        "python")
+            install_python;;
+
+        "ruby")
+            install_ruby;;
+
+        "node")
+            install_node;;
+
+        "all")
+            install_all;;
+    esac
+}
+
+# ===============
+#      MAIN
+# ===============
+
+# Check arguments
+if [ $# = 0 ]; then
+    display_usage
+    exit 1
 fi
 
-rm nodebrew_installer
+# Call the select_installer function to the all options
+for var in $@
+do
+    select_installer $var
+done
 
-# check install finished
-echo $LOGGER "Checking install finished correctly...\n\n"
-if [ "`which python`" = "$HOMEDIR/.pyenv/shims/python" ]; then
-    echo $LOGGER Python install finished correctly.
-    rm /tmp/python-install.log
-else
-    echo $LOGGER Python install failed.
-    echo $LOGGER You can read install log: /tmp/python-install.log
-fi
-
-if [ "`which ruby`" = "$HOMEDIR/.rbenv/shims/ruby" ]; then
-    echo $LOGGER Ruby install finished correctly.
-    rm /tmp/ruby-installer.log
-else
-    echo $LOGGER Ruby install failed.
-    echo $LOGGER You can read install log: /tmp/ruby-installer.log
-fi
-
-if [ "`which node`" = "$HOMEDIR/.nodebrew/current/bin/node" ]; then
-    echo $LOGGER Node install finished correctly.
-    rm /tmp/node-installer.log
-else
-    echo $LOGGER Node install failed.
-    echo $LOGGER You can read install log: /tmp/node-installer.log
-fi
-
+# exit with function result code
+exit $?
