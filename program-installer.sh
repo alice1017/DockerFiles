@@ -33,6 +33,7 @@ LOGGER_CONFIRM="[  CONFIRM  ]"
 LOGGER_DOWNLOADING="Downloading"
 LOGGER_CLONING="Cloning"
 LOGGER_INSTALLING="Installing"
+LOGGER_BUILDING="Building"
 
 
 # Functions:
@@ -192,7 +193,7 @@ eval "$(pyenv init -)"
 EOF
 
     # install python
-    echo -n "$LOGGER $LOGGER_INSTALLING Python... "
+    echo -n "$LOGGER $LOGGER_BUILDING Python... "
     PYENV=.pyenv/bin/pyenv
     LOGPATH=/tmp/python-installer.log
     $PYENV install -v 2.7.5 > $LOGPATH 2>&1 &
@@ -271,7 +272,7 @@ EOF
     echo done
 
     # install ruby stable
-    echo -n "$LOGGER $LOGGER_INSTALLING Ruby... "
+    echo -n "$LOGGER $LOGGER_BUILDING Ruby... "
     RBENV=.rbenv/bin/rbenv
     STABLE=`$RBENV install -l | grep -v - | tail -1`
     LOGPATH=/tmp/ruby-installer.log
@@ -341,7 +342,7 @@ export PATH=$HOME/.nodebrew/current/bin:$PATH
 EOF
 
     # install node stable
-    echo -n "$LOGGER $LOGGER_INSTALLING Node... "
+    echo -n "$LOGGER $LOGGER_BUILDING Node... "
     NODEBREW=.nodebrew/current/bin/nodebrew
     LOGPATH=/tmp/node-installer.log
     $NODEBREW install stable > $LOGPATH 2>&1 &
