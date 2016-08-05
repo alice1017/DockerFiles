@@ -351,7 +351,7 @@ EOF
     if [ $? = 0 ]; then
 
         # change global version
-        $NODEBREW use stable
+        $NODEBREW use stable > /dev/null 2>&1
         echo done
         return 0
     else
