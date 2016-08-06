@@ -52,19 +52,27 @@ display_usage() {
 
 # Define: display_progressbar
 display_progressbar() {
+    code=0
     while :
         do
         # before display progressbar, exec "command &"
-        jobs %1 > /dev/null 2>&1
-        [ $? = 0 ] || break
+        jobs %1 >> .joblog 2>&1
+        code=$?
+
+        # [ $? = 0 ] || break
+        if [ $code != 0 ]; then
+            code=`cat .joblog | tail -2 | head -1 | cut -d\\  -f4`
+            break
+        fi
 
         for char in '|' '/' '-' '\'; do
           echo -n $char
           sleep 0.1
           printf "\b"
         done
-
     done;
+    rm .joblog
+    return $code
 }
 
 # Define: download_zshrc
