@@ -45,6 +45,7 @@ RUN chmod +x /*.sh
 # =======================================
 
 # install
+RUN apt-get update
 RUN apt-get install -y zsh git vim make man manpages-dev
 RUN apt-get install -y build-essential libssl-dev zlib1g-dev
 RUN apt-get install -y libbz2-dev libreadline-dev libsqlite3-dev
