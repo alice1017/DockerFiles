@@ -393,7 +393,6 @@ install_all() {
     FLAG=0
     failed_installer=()
 
-    display_header zshrc
     download_zshrc
     if [ $? != 0 ]; then
         $FLAG=1
@@ -401,7 +400,6 @@ install_all() {
     fi
     sleep 1
 
-    display_header vim
     install_vim
     if [ $? != 0 ]; then
         $FLAG=1
@@ -409,7 +407,6 @@ install_all() {
     fi
     sleep 1
 
-    display_header python
     install_python
     if [ $? != 0 ]; then
         $FLAG=1
@@ -417,7 +414,6 @@ install_all() {
     fi
     sleep 1
 
-    display_header ruby
     install_ruby
     if [ $? != 0 ]; then
         $FLAG=1
@@ -425,7 +421,6 @@ install_all() {
     fi
     sleep 1
 
-    display_header node
     install_node
     if [ $? != 0 ]; then
         $FLAG=1
