@@ -152,7 +152,7 @@ install_vim() {
 
     # vimrc
     echo -n "$LOGGER $LOGGER_DOWNLOADING vimrc... "
-    $DOWNLOAD -O .vim/vimrc "https://gist.githubusercontent.com/alice1017/c66e2e07cb8cee95091b/raw/335f6b4c28ac2c6a3c10405b9b53f923c6c64d94/vimrc" &
+    $DOWNLOAD -O .vim/vimrc "https://gist.githubusercontent.com/alice1017/c66e2e07cb8cee95091b/raw/ed58259d8cd6e403ef9a9526bb190a413cf97018/vimrc" &
     display_progressbar
     ln -s .vim/vimrc .vimrc
     echo done
