@@ -50,6 +50,11 @@ display_usage() {
     echo "note: You can write multiple options"
 }
 
+# Define: display_header
+display_header() {
+    echo "===== ${1^^} INSTALLER START ====="
+}
+
 # Define: display_progressbar
 display_progressbar() {
     code=0
@@ -78,6 +83,8 @@ display_progressbar() {
 # Define: download_zshrc
 download_zshrc() {
     cd $HOMEDIR
+
+    display_header zshrc
 
     # check already exist
     if [ -e .zshrc ]; then
@@ -110,6 +117,8 @@ download_zshrc() {
 # Define: install_vim
 install_vim() {
     cd $HOMEDIR
+
+    display_header vim
 
     # check already exist
     if [ -d .vim ]; then
@@ -164,6 +173,8 @@ install_vim() {
 # Define: install_python
 install_python() {
     cd $HOMEDIR
+
+    display_header python
 
     # check already exist
     if [ -d .pyenv ]; then
@@ -238,6 +249,8 @@ EOF
 install_ruby() {
     cd $HOMEDIR
 
+    display_header ruby
+
     # check already exist
     if [ -d .rbenv ]; then
         echo "$LOGGER_WARNING The rbenv is already exist."
@@ -306,6 +319,8 @@ EOF
 # Define: install_node
 install_node() {
     cd $HOMEDIR
+
+    display_header node
 
     # check already exist
     if [ -d .nodebrew ]; then
@@ -378,6 +393,7 @@ install_all() {
     FLAG=0
     failed_installer=()
 
+    display_header zshrc
     download_zshrc
     if [ $? != 0 ]; then
         $FLAG=1
@@ -385,6 +401,7 @@ install_all() {
     fi
     sleep 1
 
+    display_header vim
     install_vim
     if [ $? != 0 ]; then
         $FLAG=1
@@ -392,6 +409,7 @@ install_all() {
     fi
     sleep 1
 
+    display_header python
     install_python
     if [ $? != 0 ]; then
         $FLAG=1
@@ -399,6 +417,7 @@ install_all() {
     fi
     sleep 1
 
+    display_header ruby
     install_ruby
     if [ $? != 0 ]; then
         $FLAG=1
@@ -406,6 +425,7 @@ install_all() {
     fi
     sleep 1
 
+    display_header node
     install_node
     if [ $? != 0 ]; then
         $FLAG=1
@@ -448,6 +468,10 @@ select_installer() {
 
         "all")
             install_all;;
+        *)
+            echo "Error: this option not allowed."
+            display_usage
+            exit 1;;
     esac
 }
 
@@ -464,7 +488,6 @@ fi
 # Call the select_installer function to the all options
 for var in $@
 do
-    echo "===== ${var^^} INSTALLER START ====="
     select_installer $var
 done
 
