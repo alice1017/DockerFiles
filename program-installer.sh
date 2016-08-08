@@ -395,35 +395,35 @@ install_all() {
 
     download_zshrc
     if [ $? != 0 ]; then
-        $FLAG=1
+        FLAG=1
         failed_installer+=("zshrc")
     fi
     sleep 1
 
     install_vim
     if [ $? != 0 ]; then
-        $FLAG=1
+        FLAG=1
         failed_installer+=("vim")
     fi
     sleep 1
 
     install_python
     if [ $? != 0 ]; then
-        $FLAG=1
+        FLAG=1
         failed_installer+=("python")
     fi
     sleep 1
 
     install_ruby
     if [ $? != 0 ]; then
-        $FLAG=1
+        FLAG=1
         failed_installer+=("ruby")
     fi
     sleep 1
 
     install_node
     if [ $? != 0 ]; then
-        $FLAG=1
+        FLAG=1
         failed_installer+=("node")
     fi
 
